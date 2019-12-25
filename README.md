@@ -36,5 +36,5 @@ Codon-optimize a coding sequence using a user-selected method. This pseudo-speci
       original codon in its host organism (as per Claassens 2017).
       
 # Description
-A simple script to wrap the codon optimization tools in the DNA Chisel package. Use codonusage.py to optimize the codon usage by either matching the codon usage of an input nucelotide fasta file, or from a known taxonomic id number (See https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi). The output can take two forms: 1) only the optimized sequence or 2) the optimized sequence and a brief DNA Chisel report. 
+A simple script to wrap the codon optimization tools in the DNA Chisel package. Use codonusage.py to optimize the codon usage by either matching the codon usage of an input nucelotide fasta file, or from a known taxonomic id number (See https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi). An example sequence set for highly expressed genes from Rhodococcus jostii RHA1 is provided (RHA1_high_expression.fasta). The output can take two forms: 1) only the optimized sequence or 2) the optimized sequence and a brief DNA Chisel report. 
 
