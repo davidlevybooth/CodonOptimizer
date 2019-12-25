@@ -5,13 +5,13 @@ Codon optimization script built on DNAChisel with RSCU calculation from the CAI 
 Simply download codonusage.py or clone repository
 
 # Usage
-python codonusage.py <options>
+<code>python codonusage.py <options>
   
 -i  --input_fasta  Path to the gene to be optimized (fasta file) (Required)
 
 -e  --highexp  Path to input genes to calculate codon usage (RSCU) (Optional)
 
--t  --taxid  NCBI Taxonomic ID # (e.g., 101510 for Rhodococcus jostii RHA1 (either -e or it are Required)
+-t  --taxid  NCBI Taxonomic ID # (e.g., 101510 for Rhodococcus jostii RHA1 (either -e or -t are Required)
 
 -c  --genetic_code  Genetic code # currently only code 11 (Bacteria, Archaea) is supported (Optional)
 
@@ -19,7 +19,7 @@ python codonusage.py <options>
 
 -o  --output  Path to write output codon optimized fasta file (Required)
 
--m  --method  Method of codon optimization (see below) Default = match_codon_usage
+-m  --method  Method of codon optimization (see below) Default = match_codon_usage</code>
 
   
 # Method Decription
