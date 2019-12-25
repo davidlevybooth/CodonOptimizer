@@ -22,13 +22,15 @@ ap.add_argument("-e", "--highexp", required=False,
 ap.add_argument("-i", "--inputfasta", required=True,
 	help="path to the gene to be optimized (fasta file)", type=str)
 ap.add_argument("-t", "--taxid", required=False,
-	help="Host organism NCBI Taxonomic ID", type=str)
+	help="Host organism NCBI Taxonomic ID", type=str, default=)
 ap.add_argument("-c", "--genetic_code", required=False,
 	help="Genetic code # for organism", type=int, default=11)
 ap.add_argument("-r", "--report", required=False,
 	help="Path for output report", type=str)
 ap.add_argument("-o", "--output", required=True,
 	help="Path for fasta ouput", type=str)
+ap.add_argument("-m", "--method", required=True,
+	help="Method for codon optimization", type=str, default="match_codon_usage")
 
 args = vars(ap.parse_args())
 
@@ -38,7 +40,7 @@ taxid = args["taxid"]
 genetic_code = args["genetic_code"]
 report_path = args["report"]
 output_path = args["output"]
-
+method = args["method"]
 ## Codon table
 #``{'*': {"TGA": 0.112, "TAA": 0.68}, 'K': ...}``
 codon_table_11={"*": {"TGA":1.0, "TAA":1.0, "TAG":1.0},
@@ -118,7 +120,7 @@ if input_path and not taxid:
 			#AvoidPattern("BsmBI_site"),
 			 #EnforceGCContent(mini=0.4, maxi=0.6, window=60),
 		],
-		objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
+		objectives=[CodonOptimize(codon_usage_table=codon_table_11, method=method)],
 	)
 
 
