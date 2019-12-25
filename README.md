@@ -24,13 +24,16 @@ python codonusage.py -t 101510 -i input_sequence.fasta -o output_sequence.fasta
   
 # Method Decription
 Codon-optimize a coding sequence using a user-selected method. This pseudo-specification is actually a function which returns an instance of another specification class depending on the selected "method":
+
     - For method="use_best_codon", every codon will be replaced by the "best"
       (i.e. most frequent) synonymous codon in the target organism. This is
       equivalent to Codon Adaptation Index (CAI) optimization.
+      
     - For method="match_codon_usage", the final sequence's codon usage will
       match as much as possible the codon usage profile of the target species
       (this method is used throughout the literature, see for instance Hale
       and Thomson 1998).
+      
     - For method="harmonize_rca", Each codon will be replaced by a synonymous
       codon whose usage in the target organism matches the usage of the
       original codon in its host organism (as per Claassens 2017).
