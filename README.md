@@ -14,8 +14,8 @@ python codonusage.py <options>
 -o  --output  Path to write output codon optimized fasta file (Required)
 -m  --method  Method of codon optimization (see below) Default = match_codon_usage
   
-# Method Decription: Codon-optimize a coding sequence using a user-selected method.
-This pseudo-specification is actually a function which returns an instance of another specification class depending on the selected "method":
+# Method Decription
+Codon-optimize a coding sequence using a user-selected method. This pseudo-specification is actually a function which returns an instance of another specification class depending on the selected "method":
     - For method="use_best_codon", every codon will be replaced by the "best"
       (i.e. most frequent) synonymous codon in the target organism. This is
       equivalent to Codon Adaptation Index (CAI) optimization.
