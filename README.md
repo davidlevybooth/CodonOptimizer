@@ -5,7 +5,7 @@ Codon optimization script built on DNAChisel with RSCU calculation from the CAI 
 Simply download codonusage.py or clone repository
 
 # Usage
-<code>python codonusage.py <options>
+python codonusage.py -t 101510 -i input_sequence.fasta -o output_sequence.fasta
   
 -i  --input_fasta  Path to the gene to be optimized (fasta file) (Required)
 
@@ -19,7 +19,7 @@ Simply download codonusage.py or clone repository
 
 -o  --output  Path to write output codon optimized fasta file (Required)
 
--m  --method  Method of codon optimization (see below) Default = match_codon_usage</code>
+-m  --method  Method of codon optimization (see below) Default = match_codon_usage
 
   
 # Method Decription
@@ -37,4 +37,3 @@ Codon-optimize a coding sequence using a user-selected method. This pseudo-speci
       
 # Description
 A simple script to wrap the codon optimization tools in the DNA Chisel package. Use codonusage.py to optimize the codon usage by either matching the codon usage of an input nucelotide fasta file, or from a known taxonomic id number (See https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi). An example sequence set for highly expressed genes from Rhodococcus jostii RHA1 is provided (RHA1_high_expression.fasta). The output can take two forms: 1) only the optimized sequence or 2) the optimized sequence and a brief DNA Chisel report. 
-
