@@ -6,13 +6,21 @@ Simply download codonusage.py or clone repository
 
 # Usage
 python codonusage.py <options>
+  
 -i  --input_fasta  Path to the gene to be optimized (fasta file) (Required)
+
 -e  --highexp  Path to input genes to calculate codon usage (RSCU) (Optional)
+
 -t  --taxid  NCBI Taxonomic ID # (e.g., 101510 for Rhodococcus jostii RHA1 (either -e or it are Required)
+
 -c  --genetic_code  Genetic code # currently only code 11 (Bacteria, Archaea) is supported (Optional)
+
 -r  --report  Path to report output file. Must have a .zip extention
+
 -o  --output  Path to write output codon optimized fasta file (Required)
+
 -m  --method  Method of codon optimization (see below) Default = match_codon_usage
+
   
 # Method Decription
 Codon-optimize a coding sequence using a user-selected method. This pseudo-specification is actually a function which returns an instance of another specification class depending on the selected "method":
