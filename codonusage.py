@@ -85,12 +85,14 @@ for dna_seq in gene_object:
 			dna = str(dna_seq.seq)
 			gene = dna
 
+if protein_flag:
+	gene = reverse_translate(gene)
 
-if input_path and not taxid:
+if input_path and taxid:
 	print("\ngene list and taxonomic ID both provided. Defaulting to gene list")
 
 #Import gene list for RSCU calculation
-if input_path and not taxid:
+if input_path:
 	print("\nImporting genes for RSCU calculation")
 	seq_list = []
 	counter = 0
@@ -117,31 +119,20 @@ if input_path and not taxid:
 			if k2 in RSCU_list:
 				codon_table_11[k][k2] = RSCU_list[k2]
 
+
 	print("\nOptimizing codons for input gene list")
 	#Read gene fasta sequence and initiate optimizer
-	#To do: populate constraints in function to prevent duplication
-	if not protein_flag:
-		problem = DnaOptimizationProblem(
-			sequence=gene,
-			constraints=[
-				AvoidPattern("BsmBI_site", "BamHI"),
-				EnforceTranslation(),
-				AvoidChanges(location=(0, 2)),
-				#EnforceSequence(sequence = "ATG", location=(0, 2)),
-				EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
-			],
-			objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
-		)
-	if protein_flag:
-		gene = reverse_translate(gene)
-		problem = DnaOptimizationProblem(
-		sequence=gene,
-		constraints=[
-			AvoidPattern("BsmBI_site", "BamHI"),
-			EnforceTranslation(),
-			EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
-		],
-		objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
+
+
+	problem = DnaOptimizationProblem(
+	sequence=gene,
+	constraints=[
+		EnforceTranslation(),
+		AvoidPattern("BsmBI_site", "BamHI"),
+		EnforceTranslation(),
+		EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
+	],
+	objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
 	)
 
 
@@ -161,17 +152,7 @@ if taxid and not input_path:
 			],
 			objectives=[CodonOptimize(species=taxid)],
 		)
-	if protein_flag:
-		gene = reverse_translate(gene)
-		problem = DnaOptimizationProblem(
-		sequence=gene,
-		constraints=[
-			EnforceTranslation(),
-			AvoidPattern("BsmBI_site", "BamHI"),
-			EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
-		],
-		objectives=[CodonOptimize(species=taxid)],
-	)
+
 
 #Output and reporting
 print("\nBefore optimization:")
