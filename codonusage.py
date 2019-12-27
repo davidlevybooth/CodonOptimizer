@@ -13,6 +13,8 @@ from dnachisel import (
 	CodonOptimize,
 	EnforceTranslation,
 	AvoidPattern,
+	AvoidChanges,
+	EnforceSequence,
 	EnforceGCContent,
 )
 
@@ -22,15 +24,17 @@ ap.add_argument("-e", "--highexp", required=False,
 ap.add_argument("-i", "--inputfasta", required=True,
 	help="path to the gene to be optimized (fasta file)", type=str)
 ap.add_argument("-t", "--taxid", required=False,
-	help="Host organism NCBI Taxonomic ID", type=str, default=)
+	help="Host organism NCBI Taxonomic ID", type=str)
 ap.add_argument("-c", "--genetic_code", required=False,
 	help="Genetic code # for organism", type=int, default=11)
 ap.add_argument("-r", "--report", required=False,
 	help="Path for output report", type=str)
 ap.add_argument("-o", "--output", required=True,
 	help="Path for fasta ouput", type=str)
-ap.add_argument("-m", "--method", required=True,
+ap.add_argument("-m", "--method", required=False,
 	help="Method for codon optimization", type=str, default="match_codon_usage")
+ap.add_argument("-p", "--protein",
+	help="Flag if protein input", action='store_true')
 
 args = vars(ap.parse_args())
 
@@ -40,7 +44,8 @@ taxid = args["taxid"]
 genetic_code = args["genetic_code"]
 report_path = args["report"]
 output_path = args["output"]
-method = args["method"]
+protein_flag = args["protein"]
+
 ## Codon table
 #``{'*': {"TGA": 0.112, "TAA": 0.68}, 'K': ...}``
 codon_table_11={"*": {"TGA":1.0, "TAA":1.0, "TAG":1.0},
@@ -80,6 +85,7 @@ for dna_seq in gene_object:
 			dna = str(dna_seq.seq)
 			gene = dna
 
+
 if input_path and not taxid:
 	print("\ngene list and taxonomic ID both provided. Defaulting to gene list")
 
@@ -113,26 +119,56 @@ if input_path and not taxid:
 
 	print("\nOptimizing codons for input gene list")
 	#Read gene fasta sequence and initiate optimizer
-	problem = DnaOptimizationProblem(
+	#To do: populate constraints in function to prevent duplication
+	if not protein_flag:
+		problem = DnaOptimizationProblem(
+			sequence=gene,
+			constraints=[
+				AvoidPattern("BsmBI_site", "BamHI"),
+				EnforceTranslation(),
+				AvoidChanges(location=(0, 2)),
+				#EnforceSequence(sequence = "ATG", location=(0, 2)),
+				EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
+			],
+			objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
+		)
+	if protein_flag:
+		gene = reverse_translate(gene)
+		problem = DnaOptimizationProblem(
 		sequence=gene,
 		constraints=[
-			#EnforceTranslation(),
-			#AvoidPattern("BsmBI_site"),
-			 #EnforceGCContent(mini=0.4, maxi=0.6, window=60),
+			AvoidPattern("BsmBI_site", "BamHI"),
+			EnforceTranslation(),
+			EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
 		],
-		objectives=[CodonOptimize(codon_usage_table=codon_table_11, method=method)],
+		objectives=[CodonOptimize(codon_usage_table=codon_table_11)],
 	)
 
 
 if taxid and not input_path:
 	print("\nOptimizing codons for taxonomic ID: " + taxid)
 	#Read gene fasta sequence and initiate optimizer
-	problem = DnaOptimizationProblem(
+	if not protein_flag:
+		problem = DnaOptimizationProblem(
+			sequence=gene,
+			constraints=[
+				#EnforceSequence(sequence = "ATG", location=(0, 2)),
+				AvoidChanges(location=(0, 2)),
+				AvoidPattern("BsmBI_site", "BamHI"),
+				EnforceTranslation(),
+				EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
+
+			],
+			objectives=[CodonOptimize(species=taxid)],
+		)
+	if protein_flag:
+		gene = reverse_translate(gene)
+		problem = DnaOptimizationProblem(
 		sequence=gene,
 		constraints=[
-			#EnforceTranslation(),
-			#AvoidPattern("BsmBI_site"),
-			 #EnforceGCContent(mini=0.4, maxi=0.6, window=60),
+			EnforceTranslation(),
+			AvoidPattern("BsmBI_site", "BamHI"),
+			EnforceGCContent(mini=0.35, maxi=0.65, window=50), #TWIST: 25% and 65% GC
 		],
 		objectives=[CodonOptimize(species=taxid)],
 	)
@@ -156,7 +192,17 @@ print(problem.objectives_text_summary())
 
 print("\nWriting optimized sequence as fasta: " + output_path)
 
-records = (SeqRecord(Seq(problem.sequence, generic_dna), id=dna_id, description="Optimized with DNAChisel"))
 
+dna_id_new=dna_id+"_opt"
+dna_seq_new=Seq(problem.sequence, generic_dna)
+
+records = (SeqRecord(dna_seq_new, id=dna_id_new, description=""))
 with open(output_path, "w") as output_handle:
 	SeqIO.write(records, output_handle, "fasta")
+
+protein_seq_new=dna_seq_new.translate(table=11, cds=True)
+protein_records=(SeqRecord(protein_seq_new, id=dna_id_new, description=""))
+
+protein_path=output_path.split(".")[0]+".faa"
+with open(protein_path, "w") as output_handle:
+	SeqIO.write(protein_records, output_handle, "fasta")
