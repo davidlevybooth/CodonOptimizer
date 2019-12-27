@@ -21,6 +21,8 @@ python codonusage.py -t 101510 -i input_sequence.fasta -o output_sequence.fasta
 
 -m  --method  Method of codon optimization (see below) Default = match_codon_usage
 
+-p  --protein  Input is a protein sequence.
+
   
 # Method Decription
 Codon-optimize a coding sequence using a user-selected method. This pseudo-specification is actually a function which returns an instance of another specification class depending on the selected "method":
